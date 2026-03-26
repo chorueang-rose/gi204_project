@@ -3,7 +3,16 @@
 public class PlayerMovement : MonoBehaviour
 {
     public float speed = 5f;
+    public float jumpForce = 7f;
     public Transform cameraTransform;
+
+    private Rigidbody rb;
+    private bool isGrounded;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     void Update()
     {
@@ -23,6 +32,28 @@ public class PlayerMovement : MonoBehaviour
         if (move != Vector3.zero)
         {
             transform.forward = move;
+        }
+
+        // กระโดด
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 }
