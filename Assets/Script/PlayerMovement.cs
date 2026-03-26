@@ -2,32 +2,27 @@
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float moveForce = 20f;
-    public float bounceForce = 8f;
+    public float speed = 5f;
+    public Transform cameraTransform;
 
-    private Rigidbody rb;
-
-    void Start()
+    void Update()
     {
-        rb = GetComponent<Rigidbody>();
-    }
+        float x = 0;
+        float z = 0;
 
-    void FixedUpdate()
-    {
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
+        if (Input.GetKey(KeyCode.W)) z = 1;
+        if (Input.GetKey(KeyCode.S)) z = -1;
+        if (Input.GetKey(KeyCode.A)) x = -1;
+        if (Input.GetKey(KeyCode.D)) x = 1;
 
-        Vector3 move = new Vector3(x, 0, z);
+        Vector3 move = cameraTransform.forward * z + cameraTransform.right * x;
+        move.y = 0;
 
-        rb.AddForce(move * moveForce);
-    }
+        transform.position += move.normalized * speed * Time.deltaTime;
 
-    void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Wall"))
+        if (move != Vector3.zero)
         {
-            Vector3 normal = collision.contacts[0].normal;
-            rb.AddForce(normal * bounceForce, ForceMode.Impulse);
+            transform.forward = move;
         }
     }
 }
